@@ -128,3 +128,27 @@ exports.copy = function () {
         }
     });
 };
+
+exports.push = function () {
+    var bufs = Buffers();
+    bufs.push(new Buffer([0]));
+    bufs.push(new Buffer([1,2,3]));
+    bufs.push(new Buffer([4,5]));
+    bufs.push(new Buffer([6,7,8,9]));
+    assert.eql(
+        [].slice.call(bufs.slice()),
+        [0,1,2,3,4,5,6,7,8,9]
+    );
+};
+
+exports.unshift = function () {
+    var bufs = Buffers();
+    bufs.unshift(new Buffer([6,7,8,9]));
+    bufs.unshift(new Buffer([4,5]));
+    bufs.unshift(new Buffer([1,2,3]));
+    bufs.unshift(new Buffer([0]));
+    assert.eql(
+        [].slice.call(bufs.slice()),
+        [0,1,2,3,4,5,6,7,8,9]
+    );
+};

@@ -8,10 +8,20 @@ function Buffers (bufs) {
     }, 0);
 }
 
-Buffers.prototype.push = function (buf) {
-    this.buffers.push(buf);
-    this.length += buf.length;
-    return this;
+Buffers.prototype.push = function () {
+    var res = this.buffers.push.apply(this.buffers, arguments);
+    for (var i = 0; i < arguments.length; i++) {
+        this.length += arguments[i].length;
+    }
+    return res;
+};
+
+Buffers.prototype.unshift = function () {
+    var res = this.buffers.unshift.apply(this.buffers, arguments);
+    for (var i = 0; i < arguments.length; i++) {
+        this.length += arguments[i].length;
+    }
+    return res;
 };
 
 Buffers.prototype.copy = function (dst, dStart, start, end) {
