@@ -21,13 +21,17 @@ Buffers.prototype.copy = function (dst, dStart, start, end) {
 Buffers.prototype.splice = function (i, howMany) {
     var buffers = this.buffers;
     var index = i >= 0 ? i : this.length - i;
-    var xs = [].slice.call(arguments, 2);
+    var reps = [].slice.call(arguments, 2);
     
     if (howMany === undefined) {
         howMany = this.length - index;
     }
     else if (howMany > this.length - index) {
         howMany = this.length - index;
+    }
+    
+    for (var i = 0; i < reps.length; i++) {
+        this.length += reps[i].length;
     }
     
     var removed = new Buffers();
@@ -47,21 +51,41 @@ Buffers.prototype.splice = function (i, howMany) {
             removed.push(buffers[ii].slice(start, start + howMany));
             
             var orig = buffers[ii];
-            var buf = new Buffer(orig.length - howMany);
+            //var buf = new Buffer(orig.length - howMany);
+            var buf0 = new Buffer(start);
             for (var i = 0; i < start; i++) {
-                buf[i] = orig[i];
+                buf0[i] = orig[i];
             }
+            
+            var buf1 = new Buffer(orig.length - start - howMany);
             for (var i = start + howMany; i < orig.length; i++) {
-                buf[ i - howMany ] = orig[i]
+                buf1[ i - howMany - start ] = orig[i]
             }
-            buffers[ii] = buf;
-            ii++;
+            
+            if (reps.length > 0) {
+                var reps_ = reps.slice();
+                reps_.unshift(buf0);
+                reps_.push(buf1);
+                buffers.splice.apply(buffers, [ ii, 1 ].concat(reps_));
+                ii += reps_.length;
+                reps = [];
+            }
+            else {
+                buffers.splice(ii, 1, buf0, buf1);
+                //buffers[ii] = buf;
+                ii += 2;
+            }
         }
         else {
             removed.push(buffers[ii].slice(start));
             buffers[ii] = buffers[ii].slice(0, start);
             ii ++;
         }
+    }
+    
+    if (reps.length > 0) {
+        buffers.splice.apply(buffers, [ ii, 0 ].concat(reps));
+        ii += reps.length;
     }
     
     while (removed.length < howMany) {
@@ -71,7 +95,7 @@ Buffers.prototype.splice = function (i, howMany) {
         
         if (take === len) {
             removed.push(buf);
-            buffers.splice(ii,1);
+            buffers.splice(ii, 1);
         }
         else {
             removed.push(buf.slice(0, take));
@@ -79,9 +103,7 @@ Buffers.prototype.splice = function (i, howMany) {
         }
     }
     
-    this.length -= removed.length + xs.reduce(
-        function (size, x) { return x.length }, 0
-    );
+    this.length -= removed.length;
     
     return removed;
 };

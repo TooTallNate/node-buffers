@@ -79,7 +79,9 @@ exports.spliceRep = function () {
                     var bufs = create(xs, split);
                     var xs_ = xs.slice();
                     
-                    var a_ = bufs.splice.apply(bufs, [ i, j ].concat(rep));
+                    var a_ = bufs.splice.apply(
+                        bufs, [ i, j ].concat(new Buffer(rep))
+                    );
                     var a = [].slice.call(a_.slice());
                     var b = xs_.splice.apply(xs_, [ i, j ].concat(rep));
                     
