@@ -48,13 +48,13 @@ exports.splice = function () {
                 var bufs = create(xs, split);
                 var xs_ = xs.slice();
                 
-                var a = bufs.splice(i,j);
-                var a_ = [].slice.call(a.slice());
-                var b_ = xs_.splice(i,j);
-                assert.eql(a_, b_,
-                    '[' + a_.join(',') + ']'
+                var a_ = bufs.splice(i,j);
+                var a = [].slice.call(a_.slice());
+                var b = xs_.splice(i,j);
+                assert.eql(a, b,
+                    '[' + a.join(',') + ']'
                         + ' != ' + 
-                    '[' + b_.join(',') + ']'
+                    '[' + b.join(',') + ']'
                 );
                 
                 assert.eql(bufs.slice(), new Buffer(xs_),
@@ -79,11 +79,16 @@ exports.spliceRep = function () {
                     var bufs = create(xs, split);
                     var xs_ = xs.slice();
                     
-                    var a = xs_.splice.apply(xs_, [ i, j ].concat(rep));
-                    var b_ = bufs.splice.apply(bufs, [ i, j ].concat(rep));
-                    var b = [].slice.call(b_);
+                    var a_ = bufs.splice.apply(bufs, [ i, j ].concat(rep));
+                    var a = [].slice.call(a_.slice());
+                    var b = xs_.splice.apply(xs_, [ i, j ].concat(rep));
                     
-                    assert.eql(a, b);
+                    assert.eql(a, b,
+                        '[' + a.join(',') + ']'
+                            + ' != ' + 
+                        '[' + b.join(',') + ']'
+                    );
+                    
                     assert.eql(bufs.slice(), new Buffer(xs_),
                         '[' + [].join.call(bufs.slice(), ',') + ']'
                             + ' != ' + 

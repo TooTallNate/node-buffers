@@ -71,9 +71,6 @@ Buffers.prototype.splice = function (i, howMany) {
         
         if (take === len) {
             removed.push(buf);
-            if (xs.length) {
-                buffers.splice.apply(buffers, [ ii, 0 ].concat(xs));
-            } 
             buffers.splice(ii,1);
         }
         else {
