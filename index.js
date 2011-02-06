@@ -22,8 +22,6 @@ module.exports = function Buffers (bufs) {
         else if (howMany > self.length - index) {
             howMany = self.length - index;
         }
-console.log('---');
-console.dir([ i, howMany ]);
         
         var removed = new Buffers();
         var bytes = 0;
@@ -36,9 +34,27 @@ console.dir([ i, howMany ]);
         ) { startBytes += buffers[ii].length }
         
         if (index - startBytes > 0) {
-            removed.push(buffers[ii].slice(index - startBytes));
-            buffers[ii] = buffers[ii].slice(0, index - startBytes);
-            ii ++;
+            var start = index - startBytes;
+            
+            if (start + howMany < buffers[ii].length) {
+                removed.push(buffers[ii].slice(start, start + howMany));
+                
+                var orig = buffers[ii];
+                var buf = new Buffer(orig.length - howMany);
+                for (var i = 0; i < start; i++) {
+                    buf[i] = orig[i];
+                }
+                for (var i = start + howMany; i < orig.length; i++) {
+                    buf[ i - howMany ] = orig[i]
+                }
+                buffers[ii] = buf;
+                ii++;
+            }
+            else {
+                removed.push(buffers[ii].slice(start));
+                buffers[ii] = buffers[ii].slice(0, start);
+                ii ++;
+            }
         }
         
         while (removed.length < howMany) {
@@ -47,12 +63,10 @@ console.dir([ i, howMany ]);
             var take = Math.min(len, howMany - removed.length);
             
             if (take === len) {
-console.dir({ push : buf });
                 removed.push(buf);
-                buffers.shift();
+                buffers.splice(ii,1);
             }
             else {
-console.dir({ push : buf.slice(0,take) });
                 removed.push(buf.slice(0, take));
                 buffers[ii] = buffers[ii].slice(take);
             }
