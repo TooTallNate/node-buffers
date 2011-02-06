@@ -48,20 +48,17 @@ exports.splice = function () {
             for (var j = i; j < xs.length; j++) {
                 var bufs = create();
                 var xs_ = xs.slice();
-console.dir([bufs.slice(), xs_]);
                 
                 var a = bufs.splice(i,j);
-                var b = new Buffers(new Buffer(xs_.splice(i,j)));
-console.dir([i,j]);
-                
-                assert.eql(a.slice(), b.slice(),
-                    '[' + [].join.call(a, ',') + ']'
+                var a_ = [].slice.call(a.slice());
+                var b_ = xs_.splice(i,j);
+                assert.eql(a_, b_,
+                    '[' + a_.join(',') + ']'
                         + ' != ' + 
-                    '[' + [].join.call(b, ',') + ']'
+                    '[' + b_.join(',') + ']'
                 );
-console.dir([bufs.slice(), xs_]);
                 
-                assert.eql(
+                assert.eql(bufs.slice(), new Buffer(xs_),
                     '[' + [].join.call(bufs.slice(), ',') + ']'
                         + ' != ' + 
                     '[' + [].join.call(xs_, ',') + ']'

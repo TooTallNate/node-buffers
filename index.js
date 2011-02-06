@@ -1,7 +1,11 @@
 module.exports = function Buffers (bufs) {
     var buffers = bufs || [];
     
-    var self = { length : 0 };
+    var self = {
+        length : buffers.reduce(function (size, buf) {
+            return size + buf.length
+        }, 0)
+    };
     
     self.push = function (buf) {
         buffers.push(buf);
@@ -15,40 +19,49 @@ module.exports = function Buffers (bufs) {
         if (howMany === undefined) {
             howMany = self.length - index;
         }
+        else if (howMany > self.length - index) {
+            howMany = self.length - index;
+        }
+console.log('---');
+console.dir([ i, howMany ]);
         
         var removed = new Buffers();
+        var bytes = 0;
         
         var startBytes = 0;
         for (
-            var si = 0;
-            si < buffers.length && startBytes + buffers[ei].length <= index;
-            si ++
-        ) { startBytes += buffers[si].length }
+            var ii = 0;
+            ii < buffers.length && startBytes + buffers[ii].length < index;
+            ii ++
+        ) { startBytes += buffers[ii].length }
         
-        var rmBytes = 0;
-        for (
-            var ei = 0;
-            ei < buffers.length && rmBytes + buffers[ei].length <= howMany;
-            ei ++
-        ) {
-console.log(ei);
-            if (rmBytes === 0) {
-                removed.push(buffers[ei].slice(index - startBytes));
+        if (index - startBytes > 0) {
+            removed.push(buffers[ii].slice(index - startBytes));
+            buffers[ii] = buffers[ii].slice(0, index - startBytes);
+            ii ++;
+        }
+        
+        while (removed.length < howMany) {
+            var buf = buffers[ii];
+            var len = buf.length;
+            var take = Math.min(len, howMany - removed.length);
+            
+            if (take === len) {
+console.dir({ push : buf });
+                removed.push(buf);
+                buffers.shift();
             }
             else {
-                removed.push(buffers[ei]);
+console.dir({ push : buf.slice(0,take) });
+                removed.push(buf.slice(0, take));
+                buffers[ii] = buffers[ii].slice(take);
             }
-            rmBytes += buffers[ei].length;
         }
         
-        if (rmBytes < howMany) {
-            removed.push(
-                buffers[ei].slice(0, howMany - rmBytes)
-            );
-        }
-        
-        buffers.splice(si, ei, xs);
-        self.length -= rmBytes - xs.reduce(function (x) { return x.length }, 0);
+        buffers.unshift.apply(buffers, xs);
+        self.length -= removed.length + xs.reduce(
+            function (size, x) { return x.length }, 0
+        );
         
         return removed;
     };
@@ -58,9 +71,6 @@ console.log(ei);
         if (i === undefined) i = 0;
         
         if (j > self.length) j = self.length;
-        //if (j > self.length) {
-        //    throw new Error('Index ' + j + ' out of bounds');
-        //}
         
         var startBytes = 0;
         for (
