@@ -57,9 +57,10 @@ console.log(ei);
         if (j === undefined) j = self.length;
         if (i === undefined) i = 0;
         
-        if (j > self.length) {
-            throw new Error('Index ' + j + ' out of bounds');
-        }
+        if (j > self.length) j = self.length;
+        //if (j > self.length) {
+        //    throw new Error('Index ' + j + ' out of bounds');
+        //}
         
         var startBytes = 0;
         for (
@@ -71,7 +72,7 @@ console.log(ei);
         var target = new Buffer(j - i);
         
         var ti = 0;
-        for (var ii = si; ti < j - i && ii < buffers[ii].length; ii++) {
+        for (var ii = si; ti < j - i && ii < buffers.length; ii++) {
             var len = buffers[ii].length;
             
             var start = ti === 0 ? i - startBytes : 0;
