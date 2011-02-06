@@ -1,6 +1,6 @@
 {
     "name" : "buffers",
-    "description" : "Buffer interface for an array of Buffers",
+    "description" : "Treat a collection of Buffers as a single contiguous partially mutable Buffer.",
     "version" : "0.0.1",
     "repository" : "http://github.com/substack/node-buffers.git",
     "author" : "James Halliday <mail@substack.net> (http://substack.net)",

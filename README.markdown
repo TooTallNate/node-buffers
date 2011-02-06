@@ -1,7 +1,7 @@
 buffers
 =======
 
-Treat a collection of Buffers as a single contiguous Buffer.
+Treat a collection of Buffers as a single contiguous partially mutable Buffer.
 
 Where possible, operations execute without creating a new Buffer and copying
 everything over.
