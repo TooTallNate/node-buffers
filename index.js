@@ -2,28 +2,28 @@ module.exports = function () {
     var offset = 0;
     var buffers = [];
     
-    var self = { ready : 0 };
+    var self = { length : 0 };
     
-    self.seek = function (n) {
+    self.advance = function (n) {
         offset += n;
         while (buffers.length > 0 && offset > buffers[0].length) {
             offset -= buffers[0].length;
-            self.ready -= buffers[0].length;
+            self.length -= buffers[0].length;
             buffers.shift();
         }
     };
     
     self.push = function (buf) {
         buffers.push(buf);
-        self.ready += buf.length;
+        self.length += buf.length;
     };
     
     self.slice = function (i, j) {
-        if (j === undefined) j = self.ready - offset;
+        if (j === undefined) j = self.length;
         if (i === undefined) i = 0;
         i += offset; j += offset;
         
-        if (j > self.ready) {
+        if (j > self.length) {
             throw new Error('Index ' + j + ' out of bounds');
         }
         
