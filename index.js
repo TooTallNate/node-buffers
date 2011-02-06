@@ -14,6 +14,10 @@ Buffers.prototype.push = function (buf) {
     return this;
 };
 
+Buffers.prototype.copy = function (dst, dStart, start, end) {
+    return this.slice(start, end).copy(dst, dStart, 0, end - start);
+};
+
 Buffers.prototype.splice = function (i, howMany) {
     var buffers = this.buffers;
     var index = i >= 0 ? i : this.length - i;

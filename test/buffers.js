@@ -67,3 +67,29 @@ exports.splice = function () {
     });
 };
 
+exports.copy = function () {
+    var xs = [0,1,2,3,4,5,6,7,8,9];
+    var splits = [ [4,2,3,1], [2,2,2,2,2], [1,6,3,1], [9,2], [10], [5,5] ];
+    
+    splits.forEach(function (split) {
+        var bufs = create(xs, split);
+        var buf = new Buffer(xs);
+        
+        for (var i = 0; i < xs.length; i++) {
+            for (var j = i; j < xs.length; j++) {
+                var t0 = new Buffer(j - i);
+                var t1 = new Buffer(j - i);
+                
+                assert.eql(
+                    bufs.copy(t0, 0, i, j),
+                    buf.copy(t1, 0, i, j)
+                );
+                
+                assert.eql(
+                    [].slice.call(t0),
+                    [].slice.call(t1)
+                );
+            }
+        }
+    });
+};
