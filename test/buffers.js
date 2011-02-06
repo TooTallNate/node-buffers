@@ -7,7 +7,14 @@ exports.slice = function () {
     bufs.push(new Buffer([4,5]));
     bufs.push(new Buffer([6,7,8]));
     bufs.push(new Buffer([9]));
+    
     var xs = [0,1,2,3,4,5,6,7,8,9];
+    assert.eql(new Buffer(xs), bufs.slice(),
+        '[' + xs.join(',') + ']'
+            + ' != ' + 
+        '[' + [].join.call(bufs.slice(), ',') + ']'
+    );
+    
     for (var i = 0; i < xs.length; i++) {
         for (var j = i; j < xs.length; j++) {
             var a = bufs.slice(i,j);
@@ -41,15 +48,18 @@ exports.splice = function () {
             for (var j = i; j < xs.length; j++) {
                 var bufs = create();
                 var xs_ = xs.slice();
+console.dir([bufs.slice(), xs_]);
                 
                 var a = bufs.splice(i,j);
                 var b = new Buffers(new Buffer(xs_.splice(i,j)));
+console.dir([i,j]);
                 
                 assert.eql(a.slice(), b.slice(),
                     '[' + [].join.call(a, ',') + ']'
                         + ' != ' + 
                     '[' + [].join.call(b, ',') + ']'
                 );
+console.dir([bufs.slice(), xs_]);
                 
                 assert.eql(
                     '[' + [].join.call(bufs.slice(), ',') + ']'

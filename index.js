@@ -21,16 +21,17 @@ module.exports = function Buffers (bufs) {
         var startBytes = 0;
         for (
             var si = 0;
-            si < buffers.length && startBytes + buffers[i].length <= index;
+            si < buffers.length && startBytes + buffers[ei].length <= index;
             si ++
         ) { startBytes += buffers[si].length }
         
         var rmBytes = 0;
         for (
             var ei = 0;
-            ei < buffers.length && rmBytes + buffers[i].length <= howMany;
+            ei < buffers.length && rmBytes + buffers[ei].length <= howMany;
             ei ++
         ) {
+console.log(ei);
             if (rmBytes === 0) {
                 removed.push(buffers[ei].slice(index - startBytes));
             }
