@@ -1,5 +1,5 @@
 var assert = require('assert');
-var Buffers = require('../lib/buffers.js');
+var Buffers = require('buffers');
 
 exports.slice = function () {
     var bufs = Buffers();
@@ -10,10 +10,13 @@ exports.slice = function () {
     var xs = [0,1,2,3,4,5,6,7,8,9];
     for (var i = 0; i < xs.length; i++) {
         for (var j = i; j < xs.length; j++) {
-//            console.log([ i, j ]);
-            assert.eql(
-                bufs.slice(i,j),
-                new Buffer(xs.slice(i,j))
+            var a = bufs.slice(i,j);
+            var b = new Buffer(xs.slice(i,j));
+            
+            assert.eql(a, b,
+                '[' + [].join.call(a, ',') + ']'
+                    + ' != ' + 
+                '[' + [].join.call(b, ',') + ']'
             );
         }
     }

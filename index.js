@@ -27,37 +27,27 @@ module.exports = function () {
             throw new Error('Index ' + j + ' out of bounds');
         }
         
-        var bytes = { start : 0, end : 0 };
+        var startBytes = 0;
+        for (
+            var si = 0;
+            si < buffers.length && startBytes + buffers[si].length <= i;
+            si++
+        ) { startBytes += buffers[si].length }
         
-        for (var si = 0; si < buffers.length && bytes.start < i; si++) {
-            bytes.start += buffers[si].length;
-        }
-        bytes.start -= buffers[si].length;
+        var target = new Buffer(j - i);
         
-        bytes.end = bytes.start;
-        for (var ei = 0; ei < buffers.length && bytes.end < j; ei++) {
-            bytes.end += buffers[ei].length;
-        }
-        bytes.end -= buffers[ei].length;
-        
-        var target;
-        if (si === ei) {
-            target = buffers[si].slice(bytes.start - i, bytes.end - j);
-        }
-        else {
-            target = new Buffer(j - i);
-            var ti = 0;
+        var ti = 0;
+        for (var ii = si; ti < j - i && ii < buffers[ii].length; ii++) {
+            var len = buffers[ii].length;
             
-            buffers[si].copy(
-                target, 0,
-                buffers[si].length - (bytes.start - i),
-                bytes.start - i
-            );
+            var start = ti === 0 ? i - startBytes : 0;
+            var end = ti + len >= j - i
+                ? Math.min(start + (j - i) - ti, len)
+                : len
+            ;
             
-            for (var ii = si; ii < ei; ii++) {
-                
-                console.dir([ ei, si ]);
-            }
+            buffers[ii].copy(target, ti, start, end);
+            ti += end - start;
         }
         
         return target;
